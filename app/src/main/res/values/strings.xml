@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Wukong Starter</string>
+    <string name="app_description">Auto start Termux after boot. Your .bashrc in Termux can run the script.</string>
+    <string name="start_termux">Start Termux Now</string>
+    <string name="status_idle">Status: waiting to start</string>
+    <string name="status_request_sent">Status: launch request sent</string>
+    <string name="status_start_failed">Status: failed to start</string>
+    <string name="status_termux_missing">Status: Termux is not installed</string>
+    <string name="status_termux_started">Status: Termux launch requested</string>
+    <string name="status_termux_start_failed">Status: failed to launch Termux: %1$s</string>
+    <string name="notification_channel_name">Wukong Start Service</string>
+    <string name="notification_title">Wukong Start Service</string>
+    <string name="notification_text">Trying to launch Termux</string>
+    <string name="start_termux_failed">Failed to launch Termux: %1$s</string>
+</resources>
