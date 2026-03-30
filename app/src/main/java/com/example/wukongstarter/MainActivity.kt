@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity() {
 
         startTermuxButton.setOnClickListener { startWukongService() }
         requestBatteryOptimizationIfNeeded()
+        
+        // App启动即刻执行心跳 (启动服务)
+        startWukongService()
     }
 
     override fun onStart() {

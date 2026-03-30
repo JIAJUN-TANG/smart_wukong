@@ -12,22 +12,92 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.example.wukongstarter.api.RetrofitClient
+import com.example.wukongstarter.manager.EventManager
+import com.example.wukongstarter.model.DataSubmit
+import com.google.gson.Gson
+import com.ubtrobot.sys.SysApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class WukongService : Service() {
+    private lateinit var eventManager: EventManager
+    private val serviceJob = Job()
+    private val serviceScope = CoroutineScope(Dispatchers.IO + serviceJob)
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         startAsForegroundService()
+        
+        eventManager = EventManager(this)
+        eventManager.startSubscribe()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Launch Termux in the background (temporarily commented out)
+        /*
         Thread {
             launchTermux()
-            stopSelf(startId)
         }.start()
-        return START_NOT_STICKY
+        */
+        
+        // Start 10-minute heartbeat
+        startHeartbeat()
+        
+        return START_STICKY
+    }
+
+    private fun startHeartbeat() {
+        val gson = Gson()
+        serviceScope.launch {
+            var isFirstRun = true
+            while (isActive) {
+                try {
+                    val status = eventManager.getCurrentStatus() // 现在只会有 batteryLevel
+                    
+                    // 动态获取机器人真实的 ID
+                    val realRobotId = try {
+                        val fullId = SysApi.get().readRobotSid() ?: "unknown"
+                        if (fullId.length > 5) fullId.takeLast(5) else fullId
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to get Robot ID", e)
+                        "unknown"
+                    }
+                    
+                    val currentDataType = if (isFirstRun) "boot" else "heartbeat"
+                    isFirstRun = false
+                    
+                    val submitData = DataSubmit(
+                        robotId = realRobotId,
+                        dataType = currentDataType,
+                        content = gson.toJson(status) // {"batteryLevel": 100}
+                    )
+                    
+                    val response = RetrofitClient.api.uploadHeartbeat(submitData)
+                    if (response.isSuccessful) {
+                        Log.i(TAG, "Heartbeat sent successfully: ${status.batteryLevel}%")
+                    } else {
+                        Log.e(TAG, "Heartbeat failed with code: ${response.code()}")
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to send heartbeat", e)
+                }
+                // Delay for 10 minutes
+                delay(10 * 60 * 1000L)
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        eventManager.stopSubscribe()
+        serviceJob.cancel()
+        super.onDestroy()
     }
 
     private fun startAsForegroundService() {
