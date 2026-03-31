@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="com.ubtrobot.master.permission.MASTER" />
     <uses-permission android:name="com.ubtrobot.master.permission.MASTER_SYSTEM_SERVICE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
         android:name=".WukongApp"
@@ -49,20 +51,24 @@
         </receiver>
 
         <service
-            android:name=".DemoMasterService"
+            android:name="com.ubtrobot.mini.speech.framework.SpeechService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.ubtrobot.master.permission.MASTER_SYSTEM_SERVICE">
             <meta-data
                 android:name="master.service"
-                android:resource="@xml/service_demo" />
+                android:process=":speech"/>
         </service>
 
         <service
             android:name=".WukongService"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:foregroundServiceType="dataSync" />
 
-        <meta-data android:name="ubt-master-app" android:value="third_part_speechservice" />
+        <service
+            android:name="com.ubtrobot.mini.speech.framework.MicrophoneArrayService"
+            android:process=":mic" />
+
     </application>
 </manifest>

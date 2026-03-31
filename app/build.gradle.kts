@@ -57,7 +57,6 @@ dependencies {
     implementation(files("libs/Msc.jar"))
     implementation(files("libs/eventbus-3.1.1.jar"))
     implementation(files("libs/protobuf-java-3.4.0.jar"))
-    implementation(files("libs/phonecall-sdk-release.aar"))
     implementation(files("libs/utillib-1.2.8.aar"))
     
     // AndroidX

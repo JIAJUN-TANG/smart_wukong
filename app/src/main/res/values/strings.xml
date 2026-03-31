@@ -12,4 +12,6 @@
     <string name="notification_title">Wukong Start Service</string>
     <string name="notification_text">Trying to launch Termux</string>
     <string name="start_termux_failed">Failed to launch Termux: %1$s</string>
+    <string name="app_id">5d7f6355</string>
+    <string name="base_url">http://47.101.38.146:8000/</string>
 </resources>

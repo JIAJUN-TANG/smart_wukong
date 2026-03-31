@@ -17,9 +17,10 @@ class BootReceiver : BroadcastReceiver() {
         }
 
         try {
+            context.startService(Intent(context, CustomSpeechService::class.java))
             ContextCompat.startForegroundService(context, Intent(context, WukongService::class.java))
         } catch (e: Exception) {
-            Log.e(TAG, "Unable to start WukongService from boot receiver", e)
+            Log.e(TAG, "Unable to start boot services", e)
         }
     }
 

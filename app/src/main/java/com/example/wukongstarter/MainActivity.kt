@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import android.Manifest
-import android.content.pm.PackageManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var startTermuxButton: Button
@@ -53,13 +53,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Audio permission granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Audio permission denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         val filter = IntentFilter(WukongService.ACTION_STATUS_UPDATE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(statusReceiver, filter, RECEIVER_NOT_EXPORTED)
+            registerReceiver(statusReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            registerReceiver(statusReceiver, filter)
+            ContextCompat.registerReceiver(
+                this,
+                statusReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -85,10 +101,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun requestBatteryOptimizationIfNeeded() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
-
         val powerManager = getSystemService(PowerManager::class.java) ?: return
         if (powerManager.isIgnoringBatteryOptimizations(packageName)) {
             return
