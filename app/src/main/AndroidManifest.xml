@@ -49,22 +49,18 @@
         </receiver>
 
         <service
-            android:name="com.ubtrobot.mini.speech.framework.MicrophoneArrayService"
-            tools:node="remove" />
-
-        <service
             android:name=".DemoMasterService"
             android:enabled="true"
             android:exported="true">
             <meta-data
                 android:name="master.service"
-                android:resource="@xml/service_mic_array" />
+                android:resource="@xml/service_demo" />
         </service>
 
         <service
             android:name=".WukongService"
             android:enabled="true"
-            android:exported="false"
+            android:exported="true"
             android:foregroundServiceType="dataSync" />
 
         <meta-data android:name="ubt-master-app" android:value="third_part_speechservice" />
