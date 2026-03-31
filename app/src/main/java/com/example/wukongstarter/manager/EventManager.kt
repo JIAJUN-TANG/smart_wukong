@@ -45,17 +45,6 @@ class EventManager(private val context: Context) {
         }
         SysEventApi.get().subscribe(batteryEvent, batteryReceiver)
 
-        // SYSACTIVE was marked as //TODO in the official demo
-        // If SysActiveStatusEventReceiver is actually found in your AAR, uncomment below:
-        /*
-        val activeEvent = SysActiveEvent.newInstance()
-        activeReceiver = object : SysActiveStatusEventReceiver() {
-            override fun onActiveStatusChanged(status: SysMasterEvent.ActivieStatusType) {
-                latestActiveStatus = status.name
-            }
-        }
-        SysEventApi.get().subscribe(activeEvent, activeReceiver!!)
-        */
     }
 
     // Unsubscribe to avoid memory leaks

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <queries>
         <package android:name="com.termux" />
@@ -13,6 +14,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="com.ubtrobot.master.permission.MASTER" />
+    <uses-permission android:name="com.ubtrobot.master.permission.MASTER_SYSTEM_SERVICE" />
 
     <application
         android:name=".WukongApp"
@@ -45,9 +49,24 @@
         </receiver>
 
         <service
+            android:name="com.ubtrobot.mini.speech.framework.MicrophoneArrayService"
+            tools:node="remove" />
+
+        <service
+            android:name=".DemoMasterService"
+            android:enabled="true"
+            android:exported="true">
+            <meta-data
+                android:name="master.service"
+                android:resource="@xml/service_mic_array" />
+        </service>
+
+        <service
             android:name=".WukongService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <meta-data android:name="ubt-master-app" android:value="third_part_speechservice" />
     </application>
 </manifest>

@@ -1,16 +1,25 @@
 package com.example.wukongstarter
 
-import android.app.Application
-import com.ubtrobot.mini.SDKInit
-import com.ubtrobot.mini.properties.sdk.Path
-import com.ubtrobot.mini.properties.sdk.PropertiesApi
+import android.content.Intent
+import com.ubtrobot.mini.speech.framework.AbstractSpeechApplication
+import com.ubtrobot.speech.SpeechService
+import com.ubtrobot.speech.SpeechSettings
+import com.ubtrobot.service.ServiceModules
 
-class WukongApp : Application() {
+class WukongApp : AbstractSpeechApplication() {
     override fun onCreate() {
         super.onCreate()
+
+        ServiceModules.declare(SpeechSettings::class.java) { _, notifier ->
+            notifier.notifyModuleCreated(DemoSpeech.INSTANCE.createSpeechSettings(this))
+        }
+
+        ServiceModules.declare(SpeechService::class.java) { _, notifier ->
+            notifier.notifyModuleCreated(DemoSpeech.INSTANCE.getSpeechService(this))
+        }
+
         try {
-            PropertiesApi.setRootPath(Path.DIR_MINI_FILES_SDCARD_ROOT)
-            SDKInit.initialize(this)
+            startService(Intent(this, DemoMasterService::class.java))
         } catch (e: Exception) {
             e.printStackTrace()
         }

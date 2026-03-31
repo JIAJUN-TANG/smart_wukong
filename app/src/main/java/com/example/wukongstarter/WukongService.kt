@@ -40,12 +40,6 @@ class WukongService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Launch Termux in the background (temporarily commented out)
-        /*
-        Thread {
-            launchTermux()
-        }.start()
-        */
         
         // Start 10-minute heartbeat
         startHeartbeat()
@@ -59,7 +53,7 @@ class WukongService : Service() {
             var isFirstRun = true
             while (isActive) {
                 try {
-                    val status = eventManager.getCurrentStatus() // 现在只会有 batteryLevel
+                    val status = eventManager.getCurrentStatus().batteryLevel
                     
                     // 动态获取机器人真实的 ID
                     val realRobotId = try {
@@ -76,12 +70,12 @@ class WukongService : Service() {
                     val submitData = DataSubmit(
                         robotId = realRobotId,
                         dataType = currentDataType,
-                        content = gson.toJson(status) // {"batteryLevel": 100}
+                        content = gson.toJson(status)
                     )
                     
                     val response = RetrofitClient.api.uploadHeartbeat(submitData)
                     if (response.isSuccessful) {
-                        Log.i(TAG, "Heartbeat sent successfully: ${status.batteryLevel}%")
+                        Log.i(TAG, "Heartbeat sent successfully: ${status}%")
                     } else {
                         Log.e(TAG, "Heartbeat failed with code: ${response.code()}")
                     }

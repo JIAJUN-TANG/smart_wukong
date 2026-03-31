@@ -14,7 +14,10 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import android.Manifest
+import android.content.pm.PackageManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var startTermuxButton: Button
@@ -38,9 +41,16 @@ class MainActivity : AppCompatActivity() {
 
         startTermuxButton.setOnClickListener { startWukongService() }
         requestBatteryOptimizationIfNeeded()
+        requestAudioPermissionIfNeeded()
         
         // App启动即刻执行心跳 (启动服务)
         startWukongService()
+    }
+
+    private fun requestAudioPermissionIfNeeded() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 100)
+        }
     }
 
     override fun onStart() {
